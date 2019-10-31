@@ -23,7 +23,7 @@ from ...helper import batching, get_first_available_gpu
 
 
 class InceptionVideoEncoder(BaseVideoEncoder):
-    batch_size = 64
+    is_trained = True
 
     def __init__(self,
                  model_dir: str,
