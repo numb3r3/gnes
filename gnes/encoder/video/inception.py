@@ -55,7 +55,7 @@ class InceptionVideoEncoder(BaseVideoEncoder):
                 self.logits, self.end_points = inception_v4(
                     self.inputs, is_training=False, dropout_keep_prob=1.0)
 
-            config = tf.ConfigProto(log_device_placement=False)
+            config = tf.ConfigProto(log_device_placement=False, allow_soft_placement=True)
             if self.on_gpu:
                 config.gpu_options.allow_growth = True
             self.sess = tf.Session(config=config)
