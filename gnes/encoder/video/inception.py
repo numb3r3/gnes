@@ -56,8 +56,8 @@ class InceptionVideoEncoder(BaseVideoEncoder):
                     self.inputs, is_training=False, dropout_keep_prob=1.0)
 
             config = tf.ConfigProto(log_device_placement=False, allow_soft_placement=True)
-            if self.on_gpu:
-                config.gpu_options.allow_growth = True
+            # if self.on_gpu:
+            config.gpu_options.allow_growth = True
             self.sess = tf.Session(config=config)
             self.saver = tf.train.Saver()
             self.saver.restore(self.sess, self.model_dir)
