@@ -64,13 +64,17 @@ class InceptionVideoEncoder(BaseVideoEncoder):
 
     def encode(self, data: List['np.ndarray'], *args,
                **kwargs) -> List['np.ndarray']:
+        import time
         v_len = [len(v) for v in data]
         pos_start = [0] + [sum(v_len[:i + 1]) for i in range(len(v_len) - 1)]
         pos_end = [sum(v_len[:i + 1]) for i in range(len(v_len))]
 
         _resize = lambda x: np.array(Image.fromarray(x).resize((self.inception_size_x, self.inception_size_y)), dtype=np.float32) * 2 / 255. - 1.
 
+        start_t = time.perf_counter()
         images = [_resize(im) for v in data for im in v]
+        elapsed = time.perf_counter() - start_t
+        print('normalize %d images use: %3.3fs' % (len(images), elapsed))
 
         @batching
         def _encode(self, data):
@@ -78,6 +82,10 @@ class InceptionVideoEncoder(BaseVideoEncoder):
                                            feed_dict={self.inputs: data})
             return end_points_[self.select_layer]
 
+        start_t = time.perf_counter()
         encodes = _encode(self, images).astype(np.float32)
+        elapsed = time.perf_counter() - start_t
+        print('encode %d images use: %3.3fs\n' % (len(images), elapsed))
+
 
         return [encodes[s:e].copy() for s, e in zip(pos_start, pos_end)]
